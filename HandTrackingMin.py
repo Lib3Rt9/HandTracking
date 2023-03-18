@@ -16,6 +16,7 @@ cTime = 0                       # previous time
 
 while True:
     success, img = cap.read()   # get the frames
+    img = cv2.flip(img, 1)
 
     # let's detect the hand
 
