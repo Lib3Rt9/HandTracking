@@ -93,8 +93,8 @@ def main():
         img = detector.findHands(img)                           # send the image to the detector
         lmksList = detector.findPosition(img)
 
-        if len(lmksList) != 0:
-            print(lmksList[0])
+        if len(lmksList) != 0:                                  # check if nothing is found
+            print(lmksList[0])                                  # print the value of the list's index
 
         # see fps
         cTime = time.time()
