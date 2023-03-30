@@ -90,8 +90,8 @@ def main():
         success, img = cap.read()                               # get the frames
         img = cv2.flip(img, 1)                                  # flip the image from front camera
 
-        img = detector.findHands(img)                           # send the image to the detector
-        lmksList = detector.findPosition(img)
+        img = detector.findHands(img, draw=True)                           # send the image to the detector
+        lmksList = detector.findPosition(img, draw=True)
 
         if len(lmksList) != 0:                                  # check if nothing is found
             print(lmksList[0])                                  # print the value of the list's index
