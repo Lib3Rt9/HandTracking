@@ -72,7 +72,7 @@ class handDetector():
                     cv2.circle(img,                             # draw circle for easier figuring the in-consider landmark
                                (cx, cy),                        # coordinate of the landmark in pixels
                                6,                               # radius of circle
-                               (0, 255, 0),                     # color value (BGR) (let's take purple)
+                               (50, 255, 50),                   # color value (BGR)
                                cv2.FILLED)                      # fill the drawn circle
 
         return lmksList
