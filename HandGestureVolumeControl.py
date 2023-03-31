@@ -3,7 +3,12 @@ import time
 import numpy as np
 import HandTrackingModule as htm
 import math
-
+#______________
+import pycaw                                        # import library
+from ctypes import cast, POINTER
+from comtypes import CLSCTX_ALL
+from pycaw.pycaw import AudioUtilities, IAudioEndpointVolume
+#--------------
 
 ######### PARAMETERS ######################
 W_CAM, H_CAM = 640, 480                             # width camera, height camera captured
@@ -16,6 +21,20 @@ cap.set(4, H_CAM)                                   # id no.4 = height
 pTime = 0                                           # previous time
 
 detector = htm.handDetector()                       # create an object detector
+
+
+# components from pycaw library
+# init
+devices = AudioUtilities.GetSpeakers()
+interface = devices.Activate(
+    IAudioEndpointVolume._iid_, CLSCTX_ALL, None)
+volume = cast(interface, POINTER(IAudioEndpointVolume))
+
+# volume.GetMute()
+# volume.GetMasterVolumeLevel()
+
+volRange = volume.GetVolumeRange()
+volume.SetMasterVolumeLevel(-5.0, None)
 
 
 
@@ -71,7 +90,7 @@ while True:
                     8,                                          # radius
                     (0, 0, 255),                                # color
                     cv2.FILLED)                                 # fill
-                
+
 
 
     # see frame per second (fps)
