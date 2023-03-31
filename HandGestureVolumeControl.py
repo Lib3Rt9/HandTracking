@@ -40,14 +40,9 @@ volRange = volume.GetVolumeRange()                  # volume range from -65.25 t
 minVolume = volRange[0]
 maxVolume = volRange[1]
 
-
-
-
-
-
-
-
-
+vol = 0
+volBar = 400                                        # volume bar should be 0 at first point
+volPercent = 0                                      # percentage of volume
 
 
 
@@ -104,6 +99,16 @@ while True:
             vol = np.interp(length,                             # value to convert
                             [50, 250],                          # range value to convert
                             [minVolume, maxVolume])             # convert to range value
+            
+            # convert to fit volume bar
+            volBar = np.interp(length,                          # value to convert
+                            [50, 250],                          # range value to convert
+                            [400, 150])                         # convert to range value
+            
+            # convert to percentage
+            volPercent = np.interp(length,                      # value to convert
+                            [50, 250],                          # range value to convert
+                            [0, 100])                           # convert to range value
 
             print(int(length), vol)
             volume.SetMasterVolumeLevel(vol, None)
@@ -116,7 +121,18 @@ while True:
                     (0, 0, 255),                                # color
                     cv2.FILLED)                                 # fill
 
-        
+    
+    # create a volume bar on the side
+    cv2.rectangle(img,                                      
+                  (10, 150),                                    # initial position
+                  (25, 400),                                    # ending position
+                  (0, 255, 0),                                  # color
+                  3)                                            # thickness
+    cv2.rectangle(img,                                      
+                  (10, int(volBar)),                            # initial position - (width, height)
+                  (20, 400),                                    # ending position
+                  (0, 255, 0),                                  # color
+                  cv2.FILLED)                                   # fill
 
 
 
@@ -132,9 +148,16 @@ while True:
                     (10, 60),                                   # set position
                     cv2.FONT_HERSHEY_SIMPLEX,                   # set Font
                     1,                                          # font scale
-                    (255, 0, 0),                                # color value (BGR) (let's take red)
-                    3) 
+                    (0, 255, 0),                                # color value (BGR) (let's take red)
+                    3)                                          # thickness
 
+    cv2.putText(img,                                            # put it into img
+                    f"{int(volPercent)} %",                     # str return decimal value, convert to int
+                    (10, 120),                                  # set position
+                    cv2.FONT_HERSHEY_SIMPLEX,                   # set Font
+                    1,                                          # font scale
+                    (0, 255, 0),                                # color value (BGR) (let's take red)
+                    3)                                          # thickness
 
     cv2.imshow("img", img)
     cv2.waitKey(1)
