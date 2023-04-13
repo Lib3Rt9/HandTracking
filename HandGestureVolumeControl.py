@@ -43,7 +43,7 @@ maxVolume = volRange[1]
 vol = 0
 volBar = 400                                        # volume bar should be 0 at first point
 volPercent = 0                                      # percentage of volume
-
+# length_condition = 0
 
 
 while True:
@@ -53,86 +53,95 @@ while True:
     img = detector.findHands(img)
     lmrkList = detector.findPosition(img, draw=True)
     if len(lmrkList) != 0:                                  # check if nothing is found
-            # print(lmrkList[4], lmrkList[8])
+        # print(lmrkList[4], lmrkList[8])
 
-            # create vars for center points of landmarks
-            x1, y1 = lmrkList[4][1], lmrkList[4][2]         # landmark at point no.4
-            x2, y2 = lmrkList[8][1], lmrkList[8][2]         # landmark at point no.8
+        # create vars for center points of landmarks
+        x1, y1 = lmrkList[4][1], lmrkList[4][2]         # landmark at point no.4
+        x2, y2 = lmrkList[8][1], lmrkList[8][2]         # landmark at point no.8
 
-            # get the center of the line
-            cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
+        x3, y3 = lmrkList[15][1], lmrkList[15][2]       # landmark at point no.15
+        x4, y4 = lmrkList[20][1], lmrkList[20][2]       # landmark at point no.15
 
-            # make sure using correct landmarks, create a circle
-            cv2.circle(img,                             # circle 1
-                    (x1, y1),                                   # center point
-                    10,                                         # radius
-                    (255, 0, 255),                              # color
-                    cv2.FILLED)                                 # fill
-            cv2.circle(img,                             # circle 2
-                    (x2, y2),                                   # center point
-                    10,                                         # radius
-                    (255, 0, 255),                              # color
-                    cv2.FILLED)                                 # fill
-            
-            cv2.line(img,                               # create a line between circle 1 and 2
-                    (x1, y1),                                   # point 1
-                    (x2, y2),                                   # point 2
-                    (0, 255, 0),                              # color
-                    3)                                          # thickness
-            
-            cv2.circle(img,                             # circle middle
-                    (cx, cy),                                   # center point
-                    8,                                          # radius
-                    (255, 0, 0),                                # color
-                    cv2.FILLED)                                 # fill
+        # get the center of the line
+        cx, cy = (x1 + x2) // 2, (y1 + y2) // 2
+        cx2, cy2 = (x3 + x4) // 2, (y3 + y4) // 2 
+
+        # make sure using correct landmarks, create a circle
+        cv2.circle(img,                             # circle 1
+                (x1, y1),                                   # center point
+                10,                                         # radius
+                (255, 0, 255),                              # color
+                cv2.FILLED)                                 # fill
+        cv2.circle(img,                             # circle 2
+                (x2, y2),                                   # center point
+                10,                                         # radius
+                (255, 0, 255),                              # color
+                cv2.FILLED)                                 # fill
+        
+        cv2.line(img,                               # create a line between circle 1 and 2
+                (x1, y1),                                   # point 1
+                (x2, y2),                                   # point 2
+                (0, 255, 0),                              # color
+                3)                                          # thickness
+        
+        cv2.circle(img,                             # circle middle
+                (cx, cy),                                   # center point
+                8,                                          # radius
+                (255, 0, 0),                                # color
+                cv2.FILLED)                                 # fill
 
 
-            # find the length of the line between 2 points above -> change volume base on that length
-            length = math.hypot(x2 - x1, y2 - y1)
-            # print(length)
+        # find the length of the line between 2 points above -> change volume base on that length
+        length = math.hypot(x2 - x1, y2 - y1)
+        length_condition = math.hypot(x4 - x3, y4 - y3)
+        # print(length)
+        print(length_condition)
 
 
-            # hand range    from    50      to  250     (50      -  250)
-            # volume range  from    -65.25  to  0.0     (-65.25  -  0.0)
+        # hand range    from    50      to  250     (50      -  250)
+        # volume range  from    -65.25  to  0.0     (-65.25  -  0.0)
 
-            # convert hand range to volume range
-            vol = np.interp(length,                             # value to convert
-                            [50, 250],                          # range value to convert
-                            [minVolume, maxVolume])             # convert to range value
-            
-            # convert to fit volume bar
-            volBar = np.interp(length,                          # value to convert
-                            [50, 250],                          # range value to convert
-                            [400, 150])                         # convert to range value
-            
-            # convert to percentage
-            volPercent = np.interp(length,                      # value to convert
-                            [50, 250],                          # range value to convert
-                            [0, 100])                           # convert to range value
+        # convert hand range to volume range
+        vol = np.interp(length,                             # value to convert
+                        [50, 250],                          # range value to convert
+                        [minVolume, maxVolume])             # convert to range value
+        
+        # convert to fit volume bar
+        volBar = np.interp(length,                          # value to convert
+                        [50, 250],                          # range value to convert
+                        [400, 150])                         # convert to range value
+        
+        # convert to percentage
+        volPercent = np.interp(length,                      # value to convert
+                        [50, 250],                          # range value to convert
+                        [0, 100])                           # convert to range value
 
-            print(int(length), vol)
+    #     print(int(length), vol)
+        if length_condition > 60:
             volume.SetMasterVolumeLevel(vol, None)
 
 
-            if length < 50:
-                cv2.circle(img,                             # circle 2
-                    (cx, cy),                                   # center point
-                    8,                                          # radius
-                    (0, 0, 255),                                # color
-                    cv2.FILLED)                                 # fill
+        if length < 50:
+            cv2.circle(img,                             # circle 2
+                (cx, cy),                                   # center point
+                8,                                          # radius
+                (0, 0, 255),                                # color
+                cv2.FILLED)                                 # fill
+
 
     
     # create a volume bar on the side
+    # if length_condition < 20:
     cv2.rectangle(img,                                      
-                  (10, 150),                                    # initial position
-                  (25, 400),                                    # ending position
-                  (0, 255, 0),                                  # color
-                  3)                                            # thickness
+                    (10, 150),                                    # initial position
+                    (25, 400),                                    # ending position
+                    (0, 255, 0),                                  # color
+                    3)                                            # thickness
     cv2.rectangle(img,                                      
-                  (10, int(volBar)),                            # initial position - (width, height)
-                  (20, 400),                                    # ending position
-                  (0, 255, 0),                                  # color
-                  cv2.FILLED)                                   # fill
+                    (10, int(volBar)),                            # initial position - (width, height)
+                    (20, 400),                                    # ending position
+                    (0, 255, 0),                                  # color
+                    cv2.FILLED)                                   # fill
 
 
 
@@ -150,7 +159,7 @@ while True:
                     1,                                          # font scale
                     (0, 255, 0),                                # color value (BGR) (let's take red)
                     3)                                          # thickness
-
+    # if length_condition > 60:
     cv2.putText(img,                                            # put it into img
                     f"{int(volPercent)} %",                     # str return decimal value, convert to int
                     (10, 120),                                  # set position
